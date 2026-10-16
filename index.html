@@ -1,11 +1,870 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Акции — Ильинский онлайн | Продукты питания с доставкой</title>
+
+    <!-- Google Fonts: Inter for clean typography and Caveat for handwritten logo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        script: ['Caveat', 'cursive'],
+                    },
+                    colors: {
+                        brand: {
+                            red: '#E31E24',
+                            'red-dark': '#C9161B',
+                            'red-light': '#FFF0F2',
+                            yellow: '#FFB800',
+                            orange: '#F28B70',
+                        }
+                    },
+                    boxShadow: {
+                        'card': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'hover': '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome for standard UI icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Custom smooth scroll & styling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Hide scrollbars for clean carousel look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Heart like burst animation */
+        @keyframes heart-burst {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.3);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .heart-active {
+            animation: heart-burst 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: #E31E24 !important;
+        }
+
+        /* Toast notifications */
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .toast {
+            pointer-events: auto;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
 </head>
-<body>
-    
+
+<body class="bg-[#FBFBFB] text-gray-800 font-sans antialiased min-h-screen flex flex-col justify-between">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <!-- MAIN HEADER WRAPPER -->
+    <div class="w-full bg-white border-b border-gray-100 shadow-xs">
+        <!-- TOP HEADER -->
+        <header class="max-w-[1280px] mx-auto px-4 pt-4 pb-3">
+            <!-- Row 1: Logo, Catalog, Search, Delivery pill, Wishlist, Profile, Cart -->
+            <div class="flex items-center justify-between gap-3 md:gap-4 flex-wrap lg:flex-nowrap">
+
+                <!-- Logo: Ильинский онлайн -->
+                <a href="#" class="flex items-center gap-1.5 group select-none flex-shrink-0">
+                    <span
+                        class="font-script text-3xl md:text-4xl text-[#E31E24] font-bold tracking-wide transition-transform group-hover:scale-105">Ильинский</span>
+                    <span
+                        class="bg-[#E31E24] text-white text-[11px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">онлайн</span>
+                </a>
+
+                <!-- Catalog Button (Red Pill) -->
+                <button id="catalogBtn"
+                    class="flex items-center gap-2 bg-[#E31E24] hover:bg-[#C9161B] text-white font-medium px-4 py-2.5 rounded-xl transition shadow-sm active:scale-95 flex-shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                    <span>Каталог</span>
+                </button>
+
+                <!-- Search Input Bar -->
+                <div class="relative flex-1 min-w-[220px] max-w-xl order-3 lg:order-none w-full lg:w-auto">
+                    <input type="text" id="searchInput" placeholder="Найти в каталоге"
+                        class="w-full bg-white border border-gray-200 rounded-xl pl-4 pr-10 py-2.5 text-sm focus:outline-none focus:border-[#E31E24] focus:ring-1 focus:ring-[#E31E24] transition placeholder-gray-400">
+                    <button
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#E31E24] transition">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                    <!-- Search Results Dropdown -->
+                    <div id="searchDropdown"
+                        class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-gray-100 rounded-xl shadow-xl z-50 overflow-hidden divide-y divide-gray-100">
+                    </div>
+                </div>
+
+                <!-- Delivery & Pickup pill button (Yellow/Amber) -->
+                <button id="deliveryBtn"
+                    class="flex items-center gap-2.5 bg-[#FFF4E5] hover:bg-[#FFE8CC] text-gray-800 px-3.5 py-2 rounded-xl transition border border-[#FED7AA] text-xs sm:text-sm font-medium flex-shrink-0">
+                    <span class="bg-[#F59E0B] text-white text-[11px] font-bold px-1.5 py-0.5 rounded">40 мин</span>
+                    <span class="truncate max-w-[190px] sm:max-w-none">
+                        <span class="text-gray-500 hidden xl:inline">Выберите способ получения: </span>
+                        <span class="font-semibold text-gray-800">Доставка или самовывоз</span>
+                    </span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-gray-500"></i>
+
+                    <!-- Right Actions: Wishlist, Profile, Cart -->
+                    <div class="flex items-center gap-2.5 sm:gap-3 flex-shrink-0">
+                        <!-- Wishlist (Heart) -->
+                        <button id="headerWishlistBtn" title="Избранное"
+                            class="relative p-2.5 rounded-full hover:bg-gray-100 text-gray-600 hover:text-[#E31E24] transition">
+                            <i class="fa-regular fa-heart text-xl"></i>
+                            <span id="wishlistCount"
+                                class="hidden absolute -top-1 -right-1 bg-[#E31E24] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                        </button>
+
+                        <!-- Profile Avatar (Yellow Circle) -->
+                        <button title="Личный кабинет"
+                            class="w-10 h-10 rounded-full bg-[#FFECC7] hover:bg-[#FEDC9B] text-[#D97706] flex items-center justify-center transition shadow-sm">
+                            <i class="fa-regular fa-user text-lg"></i>
+                        </button>
+
+                        <!-- Cart Button (Red Pill) -->
+                        <button id="headerCartBtn"
+                            class="flex items-center gap-2 bg-[#E31E24] hover:bg-[#C9161B] text-white font-medium px-4 py-2.5 rounded-xl transition shadow-sm active:scale-95">
+                            <i class="fa-solid fa-basket-shopping text-base"></i>
+                            <span class="hidden sm:inline">Корзина</span>
+                            <span id="headerCartCount"
+                                class="bg-white/20 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+                        </button>
+                    </div>
+
+            </div>
+
+            <!-- Row 2: Category Pills Bar -->
+            <nav class="flex items-center gap-2 sm:gap-3 mt-4 overflow-x-auto no-scrollbar py-1">
+                <!-- Супермаркет -->
+                <button
+                    class="category-pill flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F0FDF4] text-[#166534] border border-[#DCFCE7] hover:bg-[#DCFCE7] text-xs sm:text-sm font-medium transition whitespace-nowrap">
+                    <span class="text-base">🍏</span>
+                    <span>Супермаркет</span>
+                </button>
+
+                <!-- Кулинария -->
+                <button
+                    class="category-pill flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFF7ED] text-[#9A3412] border border-[#FFEDD5] hover:bg-[#FFEDD5] text-xs sm:text-sm font-medium transition whitespace-nowrap">
+                    <span class="text-base">🍗</span>
+                    <span>Кулинария</span>
+                </button>
+
+                <!-- Заморозка -->
+                <button
+                    class="category-pill flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FEFCE8] text-[#854D0E] border border-[#FEF9C3] hover:bg-[#FEF9C3] text-xs sm:text-sm font-medium transition whitespace-nowrap">
+                    <span class="text-base">🥐</span>
+                    <span>Заморозка</span>
+                </button>
+
+                <!-- Другое -->
+                <button
+                    class="category-pill flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFF1F2] text-[#9F1239] border border-[#FFE4E6] hover:bg-[#FFE4E6] text-xs sm:text-sm font-medium transition whitespace-nowrap">
+                    <span class="text-base">🍎</span>
+                    <span>Другое</span>
+                </button>
+
+                <!-- Акции (ACTIVE TAB in screenshot) -->
+                <button
+                    class="category-pill active-pill flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FFE8CC] text-[#9A3412] border-2 border-[#FDBA74] font-semibold text-xs sm:text-sm shadow-sm whitespace-nowrap">
+                    <span class="text-base">🔥</span>
+                    <span>Акции</span>
+                </button>
+
+                <!-- Магазины -->
+                <button
+                    class="category-pill flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F5F5F4] text-[#44403C] border border-[#E7E5E4] hover:bg-[#E7E5E4] text-xs sm:text-sm font-medium transition whitespace-nowrap">
+                    <span class="text-base">📍</span>
+                    <span>Магазины</span>
+                </button>
+            </nav>
+        </header>
+    </div>
+
+    <!-- MAIN BODY CONTENT -->
+    <main class="max-w-[1280px] mx-auto px-4 py-6 w-full flex-1">
+
+        <!-- SECTION 1: PROMOTIONS (АКЦИИ) -->
+        <section class="mb-12">
+            <!-- Section Heading -->
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-gray-900">АКЦИИ</h1>
+                <span class="text-xs sm:text-sm text-gray-500 font-medium">4 спецпредложения</span>
+            </div>
+
+            <!-- 2x2 Promotions Grid (Exact 1:1 match with screenshot) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
+
+                <!-- CARD 1: Сделай предзаказ в кулинарии со скидкой (Deep Berry/Plum) -->
+                <div
+                    class="flex flex-col sm:flex-row bg-[#FFF0F2] rounded-3xl overflow-hidden border border-pink-100/60 shadow-sm hover:shadow-md transition duration-300">
+                    <!-- Left visual block (Deep Plum Red) -->
+                    <div
+                        class="sm:w-1/2 bg-[#9B325A] p-6 text-white flex flex-col justify-between relative overflow-hidden rounded-3xl sm:rounded-r-none min-h-[220px]">
+                        <!-- Title -->
+                        <h3 class="text-lg sm:text-xl font-bold leading-snug relative z-10 max-w-[200px]">
+                            Сделай предзаказ в кулинарии со скидкой
+                        </h3>
+                        <!-- Decorative Ramen Bowl Illustration/Image -->
+                        <div class="mt-4 flex justify-start sm:justify-center relative z-10">
+                            <div
+                                class="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden shadow-lg border-2 border-white/30 transform hover:scale-105 transition duration-300">
+                                <img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=400&q=80"
+                                    alt="Кулинария рамен" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                        <!-- Background glow effect -->
+                        <div
+                            class="absolute -bottom-10 -right-10 w-36 h-36 bg-white/10 rounded-full blur-xl pointer-events-none">
+                        </div>
+                    </div>
+
+                    <!-- Right text/action block (Soft Pink) -->
+                    <div class="sm:w-1/2 p-6 flex flex-col justify-between bg-[#FFF0F2]">
+                        <p class="text-gray-700 text-sm leading-relaxed mb-6 font-normal">
+                            Оформите заказ из кулинарии за сутки и получите скидку. Заказ будет доставлен вовремя.
+                        </p>
+                        <div>
+                            <button onclick="handlePromoClick('Сделай предзаказ в кулинарии')"
+                                class="w-full sm:w-auto px-6 py-2.5 rounded-full border border-[#E31E24] text-[#E31E24] hover:bg-[#E31E24] hover:text-white font-medium text-sm transition-all duration-200 text-center shadow-xs">
+                                К покупкам
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 2: Праздник к нам приходит (Bright Coral Red with 20% badge) -->
+                <div
+                    class="flex flex-col sm:flex-row bg-[#FFF0F2] rounded-3xl overflow-hidden border border-pink-100/60 shadow-sm hover:shadow-md transition duration-300">
+                    <!-- Left visual block (Bright Coral Red) -->
+                    <div
+                        class="sm:w-1/2 bg-[#FF4742] p-6 text-white flex flex-col justify-between relative overflow-hidden rounded-3xl sm:rounded-r-none min-h-[220px]">
+                        <div>
+                            <!-- Title -->
+                            <h3 class="text-lg sm:text-xl font-bold leading-snug relative z-10 mb-2">
+                                Праздник к нам приходит
+                            </h3>
+                            <!-- 20% скидка Pill Badge -->
+                            <span
+                                class="inline-block bg-white text-[#FF4742] text-xs font-bold px-2.5 py-0.5 rounded-full shadow-xs">
+                                20% скидка
+                            </span>
+                        </div>
+                        <!-- Coca-Cola Bottles Image -->
+                        <div class="mt-3 flex justify-center relative z-10">
+                            <div class="h-28 sm:h-32 flex items-center justify-center">
+                                <img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=400&q=80"
+                                    alt="Coca-Cola напитки"
+                                    class="h-full object-contain rounded-xl drop-shadow-md transform hover:scale-105 transition duration-300">
+                            </div>
+                        </div>
+                        <div
+                            class="absolute -bottom-8 -left-8 w-32 h-32 bg-white/10 rounded-full blur-lg pointer-events-none">
+                        </div>
+                    </div>
+
+                    <!-- Right text/action block (Soft Pink) -->
+                    <div class="sm:w-1/2 p-6 flex flex-col justify-between bg-[#FFF0F2]">
+                        <p class="text-gray-700 text-sm leading-relaxed mb-6 font-normal">
+                            Оформите заказ на кулинарию за сутки и получите скидку. Заказ будет доставлен вовремя.
+                        </p>
+                        <div>
+                            <button onclick="handlePromoClick('Праздник к нам приходит')"
+                                class="w-full sm:w-auto px-6 py-2.5 rounded-full border border-[#E31E24] text-[#E31E24] hover:bg-[#E31E24] hover:text-white font-medium text-sm transition-all duration-200 text-center shadow-xs">
+                                К покупкам
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 3: Скидка на третий товар «Чистая линия» (Peach / Soft Salmon) -->
+                <div
+                    class="flex flex-col sm:flex-row bg-[#FFF0F2] rounded-3xl overflow-hidden border border-pink-100/60 shadow-sm hover:shadow-md transition duration-300">
+                    <!-- Left visual block (Soft Coral / Peach) -->
+                    <div
+                        class="sm:w-1/2 bg-[#F6876A] p-6 text-white flex flex-col justify-between relative overflow-hidden rounded-3xl sm:rounded-r-none min-h-[220px]">
+                        <!-- Title -->
+                        <h3 class="text-lg sm:text-xl font-bold leading-snug relative z-10">
+                            Скидка на третий товар в корзине «Чистая линия»
+                        </h3>
+                        <!-- Cosmetic Bottles Image -->
+                        <div class="mt-3 flex justify-center relative z-10">
+                            <div class="h-28 sm:h-32 flex items-center justify-center">
+                                <img src="https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=400&q=80"
+                                    alt="Чистая линия косметика"
+                                    class="h-full object-contain rounded-xl drop-shadow-md transform hover:scale-105 transition duration-300">
+                            </div>
+                        </div>
+                        <div
+                            class="absolute -top-8 -right-8 w-28 h-28 bg-white/10 rounded-full blur-md pointer-events-none">
+                        </div>
+                    </div>
+
+                    <!-- Right text/action block (Soft Pink) -->
+                    <div class="sm:w-1/2 p-6 flex flex-col justify-between bg-[#FFF0F2]">
+                        <p class="text-gray-700 text-sm leading-relaxed mb-6 font-normal">
+                            Оформите заказ на кулинарию за сутки и получите скидку. Заказ будет доставлен вовремя.
+                        </p>
+                        <div>
+                            <button onclick="handlePromoClick('Чистая линия')"
+                                class="w-full sm:w-auto px-6 py-2.5 rounded-full border border-[#E31E24] text-[#E31E24] hover:bg-[#E31E24] hover:text-white font-medium text-sm transition-all duration-200 text-center shadow-xs">
+                                К покупкам
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 4: Комбо-набор 3 пиццы за 1500 ₽ (Warm Amber Yellow) -->
+                <div
+                    class="flex flex-col sm:flex-row bg-[#FFF0F2] rounded-3xl overflow-hidden border border-pink-100/60 shadow-sm hover:shadow-md transition duration-300">
+                    <!-- Left visual block (Amber Yellow) -->
+                    <div
+                        class="sm:w-1/2 bg-[#F5A623] p-6 text-white flex flex-col justify-between relative overflow-hidden rounded-3xl sm:rounded-r-none min-h-[220px]">
+                        <div>
+                            <!-- Title -->
+                            <h3 class="text-lg sm:text-xl font-bold leading-snug relative z-10 mb-2">
+                                Комбо-набор 3 пиццы за 1500 ₽
+                            </h3>
+                            <!-- Price Badge -->
+                            <span
+                                class="inline-block bg-white text-[#D97706] text-xs font-bold px-2.5 py-0.5 rounded-full shadow-xs">
+                                <s>1945.50 ₽</s>
+                            </span>
+                        </div>
+                        <!-- Pizza Image -->
+                        <div class="mt-3 flex justify-center relative z-10">
+                            <div
+                                class="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden shadow-lg border-2 border-white/30 transform hover:scale-105 transition duration-300">
+                                <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80"
+                                    alt="Комбо пицца" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+                        <div
+                            class="absolute -bottom-8 -right-8 w-32 h-32 bg-white/15 rounded-full blur-lg pointer-events-none">
+                        </div>
+                    </div>
+
+                    <!-- Right text/action block (Soft Pink) -->
+                    <div class="sm:w-1/2 p-6 flex flex-col justify-between bg-[#FFF0F2]">
+                        <p class="text-gray-700 text-sm leading-relaxed mb-6 font-normal">
+                            Оформите заказ на кулинарию за сутки и получите скидку. Заказ будет доставлен вовремя.
+                        </p>
+                        <div>
+                            <button onclick="handlePromoClick('Комбо 3 пиццы')"
+                                class="w-full sm:w-auto px-6 py-2.5 rounded-full border border-[#E31E24] text-[#E31E24] hover:bg-[#E31E24] hover:text-white font-medium text-sm transition-all duration-200 text-center shadow-xs">
+                                К покупкам
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- SECTION 2: RECOMMENDATIONS FOR YOU (РЕКОМЕНДАЦИИ ДЛЯ ВАС) -->
+        <section class="mb-12">
+            <!-- Header with Title & Arrow Navigation Buttons -->
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl sm:text-2xl font-extrabold uppercase tracking-tight text-gray-900">
+                    РЕКОМЕНДАЦИИ ДЛЯ ВАС
+                </h2>
+
+                <!-- Carousel Nav Controls (< and > with orange active button) -->
+                <div class="flex items-center gap-2">
+                    <button id="sliderPrevBtn" aria-label="Предыдущий товар"
+                        class="w-9 h-9 rounded-full border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 flex items-center justify-center transition shadow-xs active:scale-90">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                    </button>
+                    <!-- Active orange button from the screenshot with cursor -->
+                    <button id="sliderNextBtn" aria-label="Следующий товар"
+                        class="w-9 h-9 rounded-full bg-[#FFA900] hover:bg-[#E09400] text-white flex items-center justify-center transition shadow-sm active:scale-90">
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Product Cards Carousel Container -->
+            <div id="productCarousel"
+                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 overflow-x-auto no-scrollbar scroll-smooth pb-2">
+
+                <!-- PRODUCT 1: Гранола Мюсли BioNova (with % discount badge) -->
+                <div class="product-card bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between relative group"
+                    data-id="1" data-name="Гранола Мюсли BioNova" data-price="99.90">
+                    <div>
+                        <!-- Top Bar: Discount Tag and Heart -->
+                        <div class="flex items-center justify-between mb-2">
+                            <!-- Discount Badge % -->
+                            <span
+                                class="bg-[#E31E24] text-white font-bold text-xs px-2 py-0.5 rounded-lg flex items-center justify-center">
+                                %
+                            </span>
+                            <!-- Wishlist Heart Button -->
+                            <button class="wishlist-btn text-gray-300 hover:text-[#E31E24] transition text-lg"
+                                onclick="toggleWishlist(1, this)">
+                                <i class="fa-regular fa-heart"></i>
+                            </button>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="w-full h-40 flex items-center justify-center p-2 mb-3 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1517093709142-f59796853874?auto=format&fit=crop&w=400&q=80"
+                                alt="Гранола Мюсли BioNova"
+                                class="max-h-36 object-contain group-hover:scale-105 transition duration-300">
+                        </div>
+
+                        <!-- Stock and Unit Price info -->
+                        <div class="flex items-center justify-between text-[11px] text-gray-400 mb-1">
+                            <span>В наличии: 2 шт</span>
+                            <span>99.90 грн</span>
+                        </div>
+
+                        <!-- Product Title -->
+                        <h4
+                            class="text-xs sm:text-sm font-semibold text-gray-800 line-clamp-2 leading-tight min-h-[36px]">
+                            Гранола Мюсли BioNova ягодные запечённые хрустящие, 400г
+                        </h4>
+                    </div>
+
+                    <!-- Bottom Bar: Prices & Add to Cart -->
+                    <div class="mt-4 pt-2 flex items-end justify-between">
+                        <div>
+                            <div class="text-base sm:text-lg font-bold text-gray-900 leading-none">99,90 грн</div>
+                            <div class="text-xs text-gray-400 line-through mt-0.5">125,00 грн</div>
+                        </div>
+
+                        <!-- Cart Action Button -->
+                        <div class="cart-action-container" data-item-id="1">
+                            <button onclick="addToCart(1, 'Гранола Мюсли BioNova', 99.90, this)"
+                                class="px-4 py-1.5 rounded-full border border-[#E31E24] text-[#E31E24] hover:bg-[#E31E24] hover:text-white font-semibold text-xs sm:text-sm transition-all duration-200">
+                                В корзину
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PRODUCT 2: Сок Идеал тыквенно-апельсиновый (with filled heart) -->
+                <div class="product-card bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between relative group"
+                    data-id="2" data-name="Сок Идеал тыквенно-апельсиновый" data-price="70.90">
+                    <div>
+                        <!-- Top Bar: Spacer and Heart (active red in screenshot) -->
+                        <div class="flex items-center justify-end mb-2">
+                            <button class="wishlist-btn text-[#E31E24] transition text-lg"
+                                onclick="toggleWishlist(2, this)">
+                                <i class="fa-solid fa-heart"></i>
+                            </button>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="w-full h-40 flex items-center justify-center p-2 mb-3 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?auto=format&fit=crop&w=400&q=80"
+                                alt="Сок Идеал тыквенно-апельсиновый"
+                                class="max-h-36 object-contain group-hover:scale-105 transition duration-300">
+                        </div>
+
+                        <!-- Stock and Unit Price info -->
+                        <div class="flex items-center justify-between text-[11px] text-gray-400 mb-1">
+                            <span>В наличии: 11 шт</span>
+                            <span>70.90 грн</span>
+                        </div>
+
+                        <!-- Product Title -->
+                        <h4
+                            class="text-xs sm:text-sm font-semibold text-gray-800 line-clamp-2 leading-tight min-h-[36px]">
+                            Сок Идеал тыквенно-апельсиновый, 1л
+                        </h4>
+                    </div>
+
+                    <!-- Bottom Bar: Price & Add to Cart -->
+                    <div class="mt-4 pt-2 flex items-end justify-between">
+                        <div>
+                            <div class="text-base sm:text-lg font-bold text-gray-900 leading-none">70,90 грн</div>
+                        </div>
+
+                        <div class="cart-action-container" data-item-id="2">
+                            <button onclick="addToCart(2, 'Сок Идеал тыквенно-апельсиновый', 70.90, this)"
+                                class="px-4 py-1.5 rounded-full border border-[#E31E24] text-[#E31E24] hover:bg-[#E31E24] hover:text-white font-semibold text-xs sm:text-sm transition-all duration-200">
+                                В корзину
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PRODUCT 3: Гранола Мюсли BioNova (with red solid active button) -->
+                <div class="product-card bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between relative group"
+                    data-id="3" data-name="Гранола Мюсли BioNova ягодные" data-price="99.90">
+                    <div>
+                        <!-- Top Bar: Spacer and Heart -->
+                        <div class="flex items-center justify-end mb-2">
+                            <button class="wishlist-btn text-gray-300 hover:text-[#E31E24] transition text-lg"
+                                onclick="toggleWishlist(3, this)">
+                                <i class="fa-regular fa-heart"></i>
+                            </button>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="w-full h-40 flex items-center justify-center p-2 mb-3 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1517093709142-f59796853874?auto=format&fit=crop&w=400&q=80"
+                                alt="Гранола Мюсли BioNova"
+                                class="max-h-36 object-contain group-hover:scale-105 transition duration-300">
+                        </div>
+
+                        <!-- Stock and Unit Price info (Осталось мало) -->
+                        <div class="flex items-center justify-between text-[11px] mb-1">
+                            <span class="text-red-500 font-medium">Осталось мало</span>
+                            <span class="text-gray-400">99.90 грн</span>
+                        </div>
+
+                        <!-- Product Title -->
+                        <h4
+                            class="text-xs sm:text-sm font-semibold text-gray-800 line-clamp-2 leading-tight min-h-[36px]">
+                            Гранола Мюсли BioNova ягодные запечённые хрустящие, 400г
+                        </h4>
+                    </div>
+
+                    <!-- Bottom Bar: Price & Red Solid Button (Active in screenshot) -->
+                    <div class="mt-4 pt-2 flex items-end justify-between">
+                        <div>
+                            <div class="text-base sm:text-lg font-bold text-gray-900 leading-none">99,90 грн</div>
+                        </div>
+
+                        <div class="cart-action-container" data-item-id="3">
+                            <button onclick="addToCart(3, 'Гранола Мюсли BioNova ягодные', 99.90, this)"
+                                class="px-4 py-1.5 rounded-full bg-[#E31E24] text-white hover:bg-[#C9161B] font-semibold text-xs sm:text-sm transition-all duration-200 shadow-xs">
+                                В корзину
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PRODUCT 4: Сок Идеал тыквенно-апельсиновый (with active counter - 1 + in screenshot) -->
+                <div class="product-card bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between relative group"
+                    data-id="4" data-name="Сок Идеал тыквенно-апельсиновый" data-price="70.90">
+                    <div>
+                        <!-- Top Bar: Spacer and Heart -->
+                        <div class="flex items-center justify-end mb-2">
+                            <button class="wishlist-btn text-gray-300 hover:text-[#E31E24] transition text-lg"
+                                onclick="toggleWishlist(4, this)">
+                                <i class="fa-regular fa-heart"></i>
+                            </button>
+                        </div>
+
+                        <!-- Product Image -->
+                        <div class="w-full h-40 flex items-center justify-center p-2 mb-3 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?auto=format&fit=crop&w=400&q=80"
+                                alt="Сок Идеал тыквенно-апельсиновый"
+                                class="max-h-36 object-contain group-hover:scale-105 transition duration-300">
+                        </div>
+
+                        <!-- Stock and Unit Price info -->
+                        <div class="flex items-center justify-between text-[11px] text-gray-400 mb-1">
+                            <span>В наличии: 4 шт</span>
+                            <span>70.90 грн</span>
+                        </div>
+
+                        <!-- Product Title -->
+                        <h4
+                            class="text-xs sm:text-sm font-semibold text-gray-800 line-clamp-2 leading-tight min-h-[36px]">
+                            Сок Идеал тыквенно-апельсиновый, 1л
+                        </h4>
+                    </div>
+
+                    <!-- Bottom Bar: Price & Stepper Button (- 1 + in yellow from screenshot) -->
+                    <div class="mt-4 pt-2 flex items-end justify-between">
+                        <div>
+                            <div class="text-base sm:text-lg font-bold text-gray-900 leading-none">70,90 грн</div>
+                        </div>
+
+                        <div class="cart-action-container" data-item-id="4">
+                            <!-- Pre-configured Stepper as shown in screenshot -->
+                            <div
+                                class="flex items-center bg-[#FFBE1A] text-gray-900 rounded-full px-3 py-1 font-bold text-xs sm:text-sm select-none gap-2 shadow-xs">
+                                <button onclick="decreaseQty(4)"
+                                    class="w-5 h-5 flex items-center justify-center hover:bg-black/10 rounded-full text-base leading-none transition">−</button>
+                                <span class="qty-val px-1">1</span>
+                                <button onclick="increaseQty(4)"
+                                    class="w-5 h-5 flex items-center justify-center hover:bg-black/10 rounded-full text-base leading-none transition">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- SECTION 3: FEEDBACK / SEARCH REQUEST BANNER (НЕ НАШЛИ, ЧТО ИСКАЛИ?) -->
+        <section class="mb-14">
+            <div
+                class="bg-[#FDEED9] rounded-3xl p-6 sm:p-8 flex flex-col lg:flex-row items-center justify-between gap-6 border border-[#FCD9B1]/60 shadow-xs">
+
+                <!-- Left Title & Prompt -->
+                <div class="text-center lg:text-left">
+                    <h3 class="text-xl sm:text-2xl font-extrabold uppercase tracking-tight text-gray-900 mb-1">
+                        НЕ НАШЛИ, ЧТО ИСКАЛИ?
+                    </h3>
+                    <p class="text-gray-600 text-xs sm:text-sm font-medium">
+                        Оставьте ссылку на товар или бренд.
+                    </p>
+                </div>
+
+                <!-- Right Form: Radios, Input & Submit Button -->
+                <form id="requestForm" onsubmit="handleRequestSubmit(event)"
+                    class="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full lg:w-auto">
+                    <!-- Radio Toggle: Товар / Бренд -->
+                    <div class="flex items-center gap-4 text-xs sm:text-sm font-semibold text-gray-800">
+                        <label class="flex items-center gap-1.5 cursor-pointer">
+                            <input type="radio" name="requestType" value="товар" checked
+                                class="accent-[#E31E24] cursor-pointer">
+                            <span>Товар</span>
+                        </label>
+                        <label class="flex items-center gap-1.5 cursor-pointer">
+                            <input type="radio" name="requestType" value="бренд"
+                                class="accent-[#E31E24] cursor-pointer">
+                            <span>Бренд</span>
+                        </label>
+                    </div>
+
+                    <!-- Input Link -->
+                    <input type="text" id="linkInput" placeholder="Ссылка..." required
+                        class="w-full sm:w-64 bg-white border border-gray-200 rounded-full px-4 py-2 text-xs sm:text-sm focus:outline-none focus:border-[#F59E0B] focus:ring-1 focus:ring-[#F59E0B] placeholder-gray-400 shadow-xs">
+
+                    <!-- Send Button -->
+                    <button type="submit"
+                        class="w-full sm:w-auto px-6 py-2 rounded-full border border-[#F59E0B] text-[#D97706] hover:bg-[#F59E0B] hover:text-white bg-white font-medium text-xs sm:text-sm transition-all duration-200 shadow-xs">
+                        Отправить
+                    </button>
+                </form>
+
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- SECTION 4: RED FOOTER (Exact match with screenshot) -->
+    <footer class="bg-[#E31E24] text-white pt-12 pb-8 w-full mt-auto">
+        <div class="max-w-[1280px] mx-auto px-4">
+
+            <!-- Top Footer Columns -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 pb-10 border-b border-white/20">
+
+                <!-- Column 1: Store Categories -->
+                <div>
+                    <h5 class="font-bold text-sm mb-3 uppercase tracking-wider text-white/90">Ильинский онлайн</h5>
+                    <ul class="space-y-2 text-xs text-white/80">
+                        <li><a href="#" class="hover:underline hover:text-white transition">Кулинария</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">Супермаркет</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">Заморозка</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">Другое</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 2: Service & Info Links -->
+                <div>
+                    <h5 class="font-bold text-sm mb-3 uppercase tracking-wider text-white/90">Ильинский клуб</h5>
+                    <ul class="space-y-2 text-xs text-white/80">
+                        <li><a href="#" class="hover:underline hover:text-white transition">Акции</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">Доставка и оплата</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">Программа лояльности</a>
+                        </li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">Политика
+                                конфиденциальности</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">Вакансии</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Contact Info & Support -->
+                <div>
+                    <div class="mb-3">
+                        <a href="tel:+380002222111"
+                            class="text-base sm:text-lg font-bold flex items-center gap-2 hover:opacity-90 transition">
+                            <i class="fa-solid fa-phone text-xs"></i>
+                            <span>+38 (000) 22-22-111</span>
+                        </a>
+                        <p class="text-[11px] text-white/70 mt-0.5">Ежедневно с 09:00 до 21:00</p>
+                    </div>
+
+                    <ul class="space-y-2 text-xs text-white/85">
+                        <li class="flex items-center gap-2 hover:underline cursor-pointer">
+                            <i class="fa-solid fa-location-dot w-4"></i>
+                            <span>Адреса магазинов</span>
+                        </li>
+                        <li class="flex items-center gap-2 hover:underline cursor-pointer">
+                            <i class="fa-solid fa-share-nodes w-4"></i>
+                            <span>Соцсети</span>
+                        </li>
+                        <li class="flex items-center gap-2 hover:underline cursor-pointer">
+                            <i class="fa-regular fa-comment-dots w-4"></i>
+                            <span>Обратная связь</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Column 4: Newsletter Subscription -->
+                <div>
+                    <h5 class="font-bold text-xs sm:text-sm mb-3 leading-snug">
+                        Подпишитесь на вкусные и полезные новости
+                    </h5>
+
+                    <form id="newsletterForm" onsubmit="handleNewsletterSubmit(event)" class="flex flex-col gap-2">
+                        <div class="flex items-center">
+                            <input type="email" placeholder="Ваш e-mail" required
+                                class="w-full bg-white text-gray-800 text-xs px-3.5 py-2 rounded-l-lg focus:outline-none placeholder-gray-400">
+                            <button type="submit"
+                                class="bg-[#B9151A] hover:bg-[#990F14] text-white text-xs font-semibold px-4 py-2 rounded-r-lg transition whitespace-nowrap">
+                                Подписаться
+                            </button>
+                        </div>
+                        <label class="flex items-start gap-2 text-[10px] text-white/75 cursor-pointer mt-1">
+                            <input type="checkbox" required checked class="mt-0.5 accent-white">
+                            <span>Согласен с политикой конфиденциальности</span>
+                        </label>
+                    </form>
+                </div>
+
+            </div>
+
+            <!-- Bottom Footer Bar: Copyright & Payment Gateways -->
+            <div class="pt-6 flex flex-col md:flex-row items-center justify-between text-[11px] text-white/70 gap-4">
+                <div>
+                    © 2021 Ильинский онлайн — Продукты питания с доставкой на дом
+                </div>
+                <div>
+                    Информация на сайте не является публичной офертой
+                </div>
+                <!-- Payment Badges -->
+                <div class="flex items-center gap-3 text-white font-bold text-xs tracking-wider">
+                    <span class="bg-white/10 px-2 py-1 rounded">VISA</span>
+                    <span class="bg-white/10 px-2 py-1 rounded">mastercard</span>
+                    <span class="bg-white/10 px-2 py-1 rounded">Apple Pay</span>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- Cart Modal / Offcanvas -->
+    <div id="cartModal" class="fixed inset-0 bg-black/50 z-50 hidden opacity-0 transition-opacity duration-300">
+        <div
+            class="fixed right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-2xl p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300">
+            <div>
+                <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                    <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+                        <i class="fa-solid fa-basket-shopping text-[#E31E24]"></i>
+                        <span>Корзина</span>
+                    </h3>
+                    <button id="closeCartBtn" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
+                </div>
+                <div id="cartItemsList" class="divide-y divide-gray-100 max-h-[60vh] overflow-y-auto mt-4">
+                    <!-- Populated dynamically by script.js -->
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-gray-100">
+                <div class="flex items-center justify-between text-base font-bold text-gray-900 mb-4">
+                    <span>Итого к оплате:</span>
+                    <span id="cartTotalPrice">0.00 грн</span>
+                </div>
+                <button onclick="checkout()"
+                    class="w-full bg-[#E31E24] hover:bg-[#C9161B] text-white font-bold py-3 rounded-xl transition shadow-md">
+                    Оформить заказ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delivery Method Modal -->
+    <div id="deliveryModal"
+        class="fixed inset-0 bg-black/50 z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div
+            class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl transform scale-95 transition-transform duration-300">
+            <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">Способ получения</h3>
+                <button id="closeDeliveryModalBtn"
+                    class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+            </div>
+            <div class="space-y-3 mt-4">
+                <div
+                    class="p-4 border-2 border-[#E31E24] rounded-2xl bg-red-50/40 flex items-center gap-3 cursor-pointer">
+                    <i class="fa-solid fa-truck-fast text-[#E31E24] text-xl"></i>
+                    <div>
+                        <div class="font-bold text-gray-900 text-sm">Курьерская доставка</div>
+                        <div class="text-xs text-gray-500">Доставим за 40 минут прямо к двери</div>
+                    </div>
+                </div>
+                <div
+                    class="p-4 border border-gray-200 hover:border-gray-300 rounded-2xl flex items-center gap-3 cursor-pointer">
+                    <i class="fa-solid fa-store text-gray-600 text-xl"></i>
+                    <div>
+                        <div class="font-bold text-gray-900 text-sm">Самовывоз из магазина</div>
+                        <div class="text-xs text-gray-500">Заберите бесплатно в ближайшем маркете</div>
+                    </div>
+                </div>
+            </div>
+            <button onclick="closeDeliveryModal()"
+                class="w-full mt-6 bg-[#E31E24] hover:bg-[#C9161B] text-white font-bold py-2.5 rounded-xl transition">
+                Подтвердить
+            </button>
+        </div>
+    </div>
+
+    <!-- Script File -->
+    <script src="script.js"></script>
 </body>
+
 </html>
