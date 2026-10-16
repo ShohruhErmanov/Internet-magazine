@@ -1,11 +1,242 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!doctype html>
+<html lang="ru">
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
+    <meta name="theme-color" content="#f20d1b">
+    <meta name="description" content="Свежие продукты и вкусные предложения в интернет-магазине «Ильинский онлайн».">
+    <title>Ильинский онлайн — интернет-магазин продуктов</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Marck+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <div class="announcement">
+      <div class="announcement__confetti" aria-hidden="true">🍐　🍋　🍓　🍒　🍅　🥑　🧀　🍋　🍐　🍓　🥐　🍒</div>
+      <div class="announcement__content">
+        <span>ПИТАЙТЕСЬ РАЗНООБРАЗНО<br>И КОПИТЕ <strong>СКИДКУ</strong> ДО 10%</span>
+        <a class="announcement__button" href="#/promotions">Получить скидку</a>
+      </div>
+    </div>
+
+    <header class="site-header">
+      <div class="header-main page-width">
+        <a class="brand" href="#/home" aria-label="Ильинский онлайн — главная">
+          <span class="brand__script">Ильинский</span>
+          <span class="brand__online">онлайн</span>
+        </a>
+
+        <div class="catalog-wrap">
+          <button class="catalog-toggle" type="button" aria-expanded="false" aria-controls="catalog-menu">
+            <span class="catalog-toggle__icon" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span>Каталог</span>
+          </button>
+          <div class="catalog-menu" id="catalog-menu" hidden>
+            <div class="catalog-menu__categories" role="list">
+              <button class="catalog-category is-active" type="button" data-category="Акции">Акции <span>›</span></button>
+              <button class="catalog-category" type="button" data-category="Популярное">Популярное <span>›</span></button>
+              <button class="catalog-category" type="button" data-category="Супермаркет">Супермаркет <span>›</span></button>
+              <button class="catalog-category" type="button" data-category="Кулинария">Кулинария <span>›</span></button>
+              <button class="catalog-category" type="button" data-category="Заморозка">Заморозка <span>›</span></button>
+              <button class="catalog-category" type="button" data-category="Другое">Другое <span>›</span></button>
+              <button class="catalog-category" type="button" data-category="Продукция «Ильинского»">Продукция «Ильинского» <span>›</span></button>
+            </div>
+            <div class="catalog-menu__subcategories">
+              <strong id="catalog-title">Акции</strong>
+              <div id="catalog-links"></div>
+            </div>
+          </div>
+        </div>
+
+        <form class="search" role="search">
+          <label class="visually-hidden" for="search-input">Начать поиск</label>
+          <input id="search-input" type="search" placeholder="Начать поиск" autocomplete="off">
+          <button class="search__button" type="submit" aria-label="Найти">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
+          </button>
+        </form>
+
+        <button class="delivery-button" type="button" data-dialog="delivery-dialog">
+          <span class="delivery-button__pin" aria-hidden="true">⌖</span>
+          <span><b>Выберите способ получения</b><small>Доставка или самовывоз</small></span>
+          <span class="delivery-button__arrow" aria-hidden="true">⌄</span>
+        </button>
+        <a class="icon-button favorite-shortcut" href="#/favorites" aria-label="Избранное">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 10-8.8 10s-8.8-4.9-8.8-10a4.5 4.5 0 0 1 8.8-1.2 4.5 4.5 0 0 1 8.8 1.2Z"></path></svg>
+        </a>
+        <a class="icon-button account-button" href="#/account" aria-label="Войти в аккаунт">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.2"></circle><path d="M5.5 20a6.5 6.5 0 0 1 13 0"></path></svg>
+        </a>
+        <button class="cart-button" type="button" data-open-cart>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 11.1a2 2 0 0 0 2 1.6h8.5a2 2 0 0 0 1.9-1.4L22 8H6"></path><circle cx="10" cy="20" r="1"></circle><circle cx="18" cy="20" r="1"></circle></svg>
+          <span>Корзина</span><span class="cart-count" aria-live="polite">0</span>
+        </button>
+      </div>
+      <nav class="quick-nav page-width" aria-label="Популярные разделы">
+        <a href="#/catalog?category=Молочные%20продукты">Молочные продукты</a>
+        <a href="#/catalog?category=Овощи%20и%20фрукты">Овощи и фрукты</a>
+        <a href="#/catalog?category=Мясо%20и%20птица">Мясо и птица</a>
+        <a href="#/catalog?category=Хлеб%20и%20выпечка">Хлеб и выпечка</a>
+        <a href="#/promotions">Акции</a>
+        <a href="#/stores">📍 Магазины</a>
+        <a href="#/vacancies">Вакансии</a>
+        <a href="#/contacts">Контакты</a>
+      </nav>
+    </header>
+
+    <main class="page-width" id="home-view">
+      <section class="showcase" aria-label="Специальные предложения">
+        <article class="hero-banner">
+          <div class="hero-banner__copy">
+            <span class="eyebrow">Вкуснее вместе</span>
+            <h1 aria-label="Радость в каждом кусочке"><span>Радость</span><span>в каждом кусочке</span></h1>
+            <p>Время порадовать себя чем-то особенным</p>
+            <button type="button" class="hero-banner__button" data-scroll="products">Перейти к покупкам <span>→</span></button>
+          </div>
+          <img class="hero-banner__image" src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1100&q=85" alt="Праздничный торт со свежими ягодами">
+          <div class="hero-banner__dots" role="group" aria-label="Выбрать баннер">
+            <button class="is-active" type="button" data-slide="0" aria-label="Баннер 1" aria-current="true"></button>
+            <button type="button" data-slide="1" aria-label="Баннер 2"></button>
+            <button type="button" data-slide="2" aria-label="Баннер 3"></button>
+            <button type="button" data-slide="3" aria-label="Баннер 4"></button>
+          </div>
+          <button class="hero-banner__next" type="button" aria-label="Следующий баннер">›</button>
+        </article>
+        <div class="promo-stack">
+          <a class="promo-card promo-card--cashback" href="#deals">
+            <div><span class="promo-card__caption">Каждая покупка<br>возвращает</span><strong>Кэшбэк</strong></div>
+            <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=520&q=80" alt="Корзина свежих овощей">
+          </a>
+          <a class="promo-card promo-card--review" href="#stores">
+            <div class="stars" aria-label="5 звёзд">★★★★★</div>
+            <strong>Оставьте отзыв<br>и получите 5% скидку</strong>
+            <span class="promo-card__thumb" aria-hidden="true">👍</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="deals-section" id="deals">
+        <div class="section-heading">
+          <div><span class="section-kicker">Выгодно сегодня</span><h2>Скидки и акции</h2></div>
+          <a class="all-link" href="#/promotions">Все акции <span>→</span></a>
+        </div>
+        <div class="deal-chips">
+          <button class="deal-chip is-selected" type="button" data-filter="all">Все предложения</button>
+          <button class="deal-chip" type="button" data-filter="Молочные продукты">Молочные продукты</button>
+          <button class="deal-chip" type="button" data-filter="Овощи и фрукты">Овощи и фрукты</button>
+          <button class="deal-chip" type="button" data-filter="Кулинария">Кулинария</button>
+        </div>
+        <div class="product-grid" id="products">
+          <article class="product-card" data-name="Молоко фермерское цельное" data-category="Молочные продукты" data-price="119">
+            <div class="product-card__photo product-card__photo--milk">
+              <span class="discount-badge">−20%</span><button class="favorite-button" type="button" aria-label="Добавить в избранное">♡</button>
+              <img src="https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=520&q=80" alt="Бутылка свежего молока" loading="lazy">
+            </div>
+            <div class="product-card__info"><span class="product-card__category">Молочные продукты</span><h3>Молоко фермерское цельное, 1 л</h3><div class="product-card__price"><strong>119 ₽</strong><del>149 ₽</del></div><button class="add-button" type="button">В корзину <span>+</span></button></div>
+          </article>
+          <article class="product-card" data-name="Клубника свежая" data-category="Овощи и фрукты" data-price="249">
+            <div class="product-card__photo product-card__photo--berries">
+              <span class="discount-badge">−15%</span><button class="favorite-button" type="button" aria-label="Добавить в избранное">♡</button>
+              <img src="https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=520&q=80" alt="Свежая клубника" loading="lazy">
+            </div>
+            <div class="product-card__info"><span class="product-card__category">Овощи и фрукты</span><h3>Клубника свежая, 250 г</h3><div class="product-card__price"><strong>249 ₽</strong><del>299 ₽</del></div><button class="add-button" type="button">В корзину <span>+</span></button></div>
+          </article>
+          <article class="product-card" data-name="Сырники домашние" data-category="Кулинария" data-price="299">
+            <div class="product-card__photo product-card__photo--syrniki">
+              <span class="discount-badge">−10%</span><button class="favorite-button" type="button" aria-label="Добавить в избранное">♡</button>
+              <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=520&q=80" alt="Свежеприготовленная домашняя еда" loading="lazy">
+            </div>
+            <div class="product-card__info"><span class="product-card__category">Кулинария</span><h3>Сырники домашние, 300 г</h3><div class="product-card__price"><strong>299 ₽</strong><del>329 ₽</del></div><button class="add-button" type="button">В корзину <span>+</span></button></div>
+          </article>
+          <article class="product-card" data-name="Хлеб деревенский" data-category="Хлеб и выпечка" data-price="89">
+            <div class="product-card__photo product-card__photo--bread">
+              <span class="discount-badge">−12%</span><button class="favorite-button" type="button" aria-label="Добавить в избранное">♡</button>
+              <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=520&q=80" alt="Свежий деревенский хлеб" loading="lazy">
+            </div>
+            <div class="product-card__info"><span class="product-card__category">Хлеб и выпечка</span><h3>Хлеб деревенский на закваске</h3><div class="product-card__price"><strong>89 ₽</strong><del>109 ₽</del></div><button class="add-button" type="button">В корзину <span>+</span></button></div>
+          </article>
+        </div>
+        <p class="empty-message" hidden>Ничего не найдено. Попробуйте изменить запрос.</p>
+      </section>
+
+      <section class="stores-strip" id="stores">
+        <div class="stores-strip__icon">📍</div>
+        <div><h2>Мы рядом</h2><p>Загляните в наши магазины за свежими продуктами</p></div>
+        <a href="#/stores" class="stores-strip__button">Найти магазин <span>→</span></a>
+      </section>
+    </main>
+    <main class="page-width route-view" id="page-view" hidden></main>
+
+    <footer class="site-footer">
+      <div class="page-width site-footer__inner">
+        <a class="brand brand--footer" href="#/home"><span class="brand__script">Ильинский</span><span class="brand__online">онлайн</span></a>
+        <div class="footer-links"><strong>Покупателям</strong><a href="#/catalog">Каталог</a><a href="#/promotions">Акции</a><a href="#/favorites">Избранное</a><a href="#/cart">Корзина</a></div>
+        <div class="footer-links"><strong>Компания</strong><a href="#/stores">Магазины</a><a href="#/vacancies">Вакансии</a><a href="#/contacts">Контакты</a></div>
+        <div class="footer-links footer-links--contact"><strong>Мы на связи</strong><a href="tel:+78005553535">8 800 555-35-35</a><a href="mailto:hello@ilinskiy.shop">hello@ilinskiy.shop</a><span>Ежедневно, 09:00–21:00</span></div>
+        <span class="footer-copyright">© Ильинский, 2026</span>
+      </div>
+    </footer>
+
+    <div class="toast" role="status" aria-live="polite"></div>
+    <div class="drawer-backdrop" data-close-cart hidden></div>
+    <aside class="cart-drawer" aria-label="Корзина" aria-hidden="true">
+      <div class="cart-drawer__heading"><div><span class="section-kicker">Ваш заказ</span><h2>Корзина</h2></div><button class="close-button" type="button" data-close-cart aria-label="Закрыть">×</button></div>
+      <div class="cart-items"></div>
+      <p class="cart-empty">В корзине пока пусто.<br>Добавьте что-нибудь вкусное!</p>
+      <div class="cart-drawer__footer" hidden><div><span>Итого</span><strong class="cart-total">0 ₽</strong></div><a class="checkout-button" href="#/checkout">Перейти к оформлению</a><a class="cart-page-link" href="#/cart">Открыть корзину</a></div>
+    </aside>
+
+    <dialog class="site-dialog" id="delivery-dialog">
+      <form method="dialog" class="delivery-map-panel__close"><button class="close-button" aria-label="Закрыть">×</button></form>
+      <section class="delivery-panel" aria-label="Параметры доставки">
+        <div class="delivery-tabs" role="group" aria-label="Способ получения">
+          <button class="delivery-option is-selected" type="button" data-delivery-mode="delivery" aria-pressed="true"><b>Доставка</b><small>Быстро и удобно</small></button>
+          <button class="delivery-option" type="button" data-delivery-mode="pickup" aria-pressed="false"><b>Самовывоз</b><small>Из магазина</small></button>
+        </div>
+        <div class="delivery-address-group">
+          <label class="address-label" for="address-input">Выберите адрес доставки</label>
+          <div class="delivery-address-field"><input class="address-input" id="address-input" type="text" placeholder="Введите адрес доставки" autocomplete="street-address"><button class="address-clear" type="button" aria-label="Очистить адрес">×</button></div>
+        </div>
+        <section class="recent-addresses" aria-labelledby="recent-address-title">
+          <h2 id="recent-address-title">Последние адреса</h2>
+          <button class="recent-address" type="button" data-address="ул. Ленина, 13, Красногорск"><span>⌖</span><span>ул. Ленина, д. 13, Красногорск, городской округ Красногорск</span><i>□</i></button>
+          <button class="recent-address" type="button" data-address="ул. Новая, 13, Красногорск"><span>⌖</span><span>ул. Новая, д. 13, Красногорск, городской округ Красногорск</span><i>□</i></button>
+        </section>
+        <section class="delivery-schedule" aria-labelledby="schedule-title">
+          <h2 id="schedule-title">Когда доставить?</h2>
+          <div class="schedule-controls">
+            <label class="schedule-select"><span class="visually-hidden">Дата доставки</span><select id="delivery-date"><option value="Сегодня">Сегодня</option><option value="Завтра">Завтра</option><option value="Послезавтра">Послезавтра</option></select><small>Дата</small></label>
+            <label class="schedule-select schedule-time"><span class="visually-hidden">Время доставки</span><select id="delivery-time"><option value="За 25 минут">За 25 минут</option><option value="с 21:00 до 23:00">с 21:00 до 23:00</option><option value="с 23:00 до 00:00">с 23:00 до 00:00</option></select><small>Время</small></label>
+          </div>
+        </section>
+        <button class="checkout-button dialog-submit" type="button">Сохранить выбор</button>
+      </section>
+      <section class="delivery-map" role="img" aria-label="Схематичная карта района доставки в Москве">
+        <svg class="delivery-map__art" viewBox="0 0 640 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <rect width="640" height="600" fill="#f4f4ed"/>
+          <path d="M-30 70 670 480M-20 420 520-20M120 630 610 20M0 190 640 120M40 0 220 600M400-20 310 620M0 520 640 315" stroke="#e6e8df" stroke-width="22" fill="none"/>
+          <path d="M-30 70 670 480M-20 420 520-20M120 630 610 20M0 190 640 120M40 0 220 600M400-20 310 620M0 520 640 315" stroke="#fff" stroke-width="14" fill="none"/>
+          <path d="M-50 367 690 146" stroke="#f7d765" stroke-width="33" fill="none"/>
+          <path d="M-50 367 690 146" stroke="#fff3a3" stroke-width="23" fill="none"/>
+          <path d="M40 40h95v70H40zm190 5h105v58H230zM432 52h133v75H432zM22 240h103v77H22zm169-65h115v64H191zm300 74h109v66H500zM98 465h114v82H98zm277 39h140v62H375zM434 379h141v64H434z" fill="#fff" stroke="#e4e6de" stroke-width="3"/>
+          <path d="M10 129h620M27 207h584M35 336h584M65 451h545M155 15v575M328 20v568M454 18v570M593 10v565" stroke="#d7ddcf" stroke-width="4"/>
+          <path d="M90 168c62 12 78-21 144 0s86 40 137 12 101-39 167-4M73 397c62-19 99 27 162 1s107-40 165-10 103 31 149 4" stroke="#b6d9d0" stroke-width="15" fill="none"/>
+          <g fill="#4198cf" font-family="Arial,sans-serif" font-size="16" font-weight="700"><text x="70" y="91">М</text><text x="370" y="192">М</text><text x="552" y="386">М</text><text x="265" y="451">М</text></g>
+          <g fill="#db5b57" font-family="Arial,sans-serif" font-size="17"><text x="400" y="94">●</text><text x="135" y="337">●</text><text x="538" y="218">●</text></g>
+          <g fill="#6e8d75" font-family="Arial,sans-serif" font-size="14"><text x="191" y="136">Фоновинская Перекрёсток</text><text x="407" y="341">Роснефть</text><text x="42" y="500">Красногорск</text><text x="402" y="552">ул. Ленина</text><text x="444" y="230">Милэшана</text></g>
+        </svg>
+        <span class="delivery-map__pin" aria-hidden="true">✓</span>
+        <span class="delivery-map__zoom" aria-hidden="true"><span>+</span><span>−</span></span>
+        <span class="delivery-map__attribution">Карта доставки · Москва</span>
+      </section>
+    </dialog>
+    <dialog class="site-dialog account-dialog" id="account-dialog">
+      <form method="dialog"><button class="close-button site-dialog__close" aria-label="Закрыть">×</button></form>
+      <span class="section-kicker">Рады вас видеть</span><h2>Войти в аккаунт</h2><p>Введите номер телефона — отправим код для входа.</p>
+      <label class="address-label" for="phone-input">Номер телефона</label><input class="address-input" id="phone-input" type="tel" placeholder="+7 (___) ___-__-__">
+      <button class="checkout-button dialog-submit" type="button">Получить код</button>
+    </dialog>
+  </body>
 </html>
